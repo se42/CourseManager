@@ -18,7 +18,10 @@ def do_login(user, prompt_func):
 		pw = prompt_func(prompt='Please enter your password: ')
 		logged_in = user.login(pw)
 
-	if not logged_in:
+	if logged_in:
+		print('\nWelcome!\n')
+	else:
+		print('Invalid credentials.  Please try again.')
 		do_login(user, prompt_func)
 
 def user_do(user, cmd):
@@ -27,19 +30,32 @@ def user_do(user, cmd):
 	if output:
 		print(output)
 
+def portal_view(user=None):
+	if not user:
+		print('OPTIONS:\n', '\tlogin\n', '\tquit\n')
+		cmd = input('Enter a command: ')
+		if cmd == 'login':
+			while not user:
+				email = input('Please enter your email: ')
+				user = get_user_object(email)
+			do_login(user, getpass.getpass)
+			portal_view(user)
+		elif cmd == 'quit':
+			print('Goodbye!')
+		else:
+			print('Invalid command.  Please try again.')
+			portal_view()
+	else:
+		user.show_info()
+		while user.is_logged_in():
+			cmd = input('Enter a command: ')
+			user_do(user, cmd)
+			print('------')
+		else:
+			portal_view()
+
 
 if __name__ == '__main__':
-	user = None
-	while not user:
-		email = input('Please enter your email: ')
-		user = get_user_object(email)
-	do_login(user, getpass.getpass)
-	print('\nWelcome!\n')
-	user.show_info()
-	while user.is_logged_in():
-		cmd = input('Enter a command: ')
-		user_do(user, cmd)
-		print('------')
-	print('Goodbye!')
+	portal_view()
 
 
