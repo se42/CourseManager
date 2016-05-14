@@ -71,6 +71,22 @@ regis = RegistrationManager(
 	email='regis@regis.com', password='magicword'
 	)
 
+## Test users -- DON'T CHANGE THESE!
+test_student = Student(
+	'test_major', 2006,
+	'Test', 'Student',
+	email='test@student.com', password='teststudent'
+	)
+test_prof = Professor(
+	'test_college', 'Howie L4',
+	'Dr.', 'Test',
+	email='test@prof.com', password='testprof'
+	)
+test_regm = RegistrationManager(
+	'test_first_name', 'Test',
+	email='test@regm.com', password='testregm'
+	)
+
 
 ## Define some Courses and Sections
 cs101 = Course('Intro to CS', 'CS101', 3, emmett)
@@ -93,8 +109,8 @@ phys302_b.set_time('TR 8:05')
 
 
 ## Object lists
-students = [scott, suzie, jake, mary, tom, harry, led, john]
-professors = [albert, emmett]
+students = [scott, suzie, jake, mary, tom, harry, led, john, test_student]
+professors = [albert, emmett, test_prof]
 courses = [cs101, phys302]
 sections = [cs101_a, cs101_b, phys302_a, phys302_b]
 
@@ -108,7 +124,7 @@ for each in students:
 db = {
 	'students': students,
 	'professors': professors,
-	'regman': [regis],
+	'regman': [regis, test_regm],
 	'courses': courses,
 	'sections': sections,
 }
