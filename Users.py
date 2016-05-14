@@ -72,29 +72,71 @@ class User:
 	def is_logged_in(self):
 		return self.logged_in
 
-	def show_info(self):
-		print('set_name\tChange your name')
-		print('show_name\tShow your name')
-		print('set_email\tChange your email')
-		print('show_email\tShow your email')
-		print('show_info\tShow this info again')
-		print('logout\t\tLog out of the system')
+	def get_base_info(self):
+		info = [
+			'Logged in as: {0}'.format(self.get_name()),
+			'Current email: {0}'.format(self.get_email()),
+		]
+		return info
+
+	def get_base_cmds(self):
+		# these are the commands that will be shown when show_info is called
+		base_cmds = [
+			'set_name',
+			'show_name',
+			'set_email',
+			'show_email',
+			'show_info',
+			'logout',
+			]
+		return base_cmds
 
 	def get_cmds(self):
 		"""
+		These are the commands that are "installed" and available to be called.
+		
 		Child classes should call this and add their own
-		methods to this dictionary, then return the newly
-		created dictionary.
+		methods to the returned dictionary, then return a
+		newly created dictionary.
 		"""
 		commands = {
-			'set_name': self.set_name,
-			'show_name': self.get_name,
-			'set_email': self.set_email,
-			'show_email': self.get_email,
-			'show_info': self.show_info,
-			'logout': self.logout,
+			'set_name': {
+				'command': self.set_name,
+				'message': 'set_name\tChange your name',
+				},
+			'show_name': {
+				'command': self.get_name,
+				'message': 'show_name\tShow your name',
+				},
+			'set_email': {
+				'command': self.set_email,
+				'message': 'set_email\tChange your email',
+				},
+			'show_email': {
+				'command': self.get_email,
+				'message': 'show_email\tShow your email',
+				},
+			'show_info': {
+				'command': self.show_info,
+				'message': 'show_info\tShow this info again',
+				},
+			'logout': {
+				'command': self.logout,
+				'message': 'logout\t\tLog out of the system',
+				},
 		}
 		return commands
+
+	def show_info(self):
+		# print all base info
+		for each in self.get_base_info():
+			print(each)
+		# print base user actions
+		print('User Actions:')
+		commands = self.get_cmds()
+		for each in self.get_base_cmds():
+			print(commands[each]['message'])
+		print()
 
 	def do(self, cmd):
 		"""
@@ -105,7 +147,7 @@ class User:
 		"""
 		commands = self.get_cmds()
 		try:
-			method = commands[cmd]
+			method = commands[cmd]['command']
 		except KeyError:
 			method = lambda: 'Command does not exist as typed.'
 		return method
@@ -154,23 +196,43 @@ class Student(User):
 		pass
 
 	def show_info(self):
-		print('Logged in as: ', self.get_name())
-		print('Current email: ', self.get_email())
+		# print all base info
+		for each in self.get_base_info():
+			print(each)
+		# print student-specific info
 		print('Your major: ', self.major)
 		print('Your sections: ', self.sections_taken)
 		print('------')
+		# print base user actions
 		print('User Actions:')
-		super(Student, self).show_info()
+		commands = self.get_cmds()
+		for each in self.get_base_cmds():
+			print(commands[each]['message'])
 		print()
+		# print student-specific actions
 		print('Student Actions')
-		print('show_major\tShow your major')
-		print('set_major\tChange your major')
+		for each in self.get_student_cmds():
+			print(commands[each]['message'])
 		print()
+
+	def get_student_cmds(self):
+		# active student commands
+		student_cmds = [
+			'show_major',
+			'set_major',
+		]
+		return student_cmds
 
 	def get_cmds(self):
 		commands = super(Student, self).get_cmds()
-		commands['show_major'] = self.get_major
-		commands['set_major'] = self.set_major
+		commands['show_major'] = {
+			'command': self.get_major,
+			'message': 'show_major\tShow your major',
+			}
+		commands['set_major'] = {
+			'command': self.set_major,
+			'message': 'set_major\tChange your major',
+			}
 		return commands
 
 
@@ -200,8 +262,10 @@ class Professor(User):
 		self.courses_taught.append(course)
 
 	def show_info(self):
-		print('Logged in as: ', self.get_name())
-		print('Current email: ', self.get_email())
+		# print all base info
+		for each in self.get_base_info():
+			print(each)
+		# print professor-specific info
 		print('Your college: ', self.college)
 		print('Your office: ', self.office_number)
 		print('Your courses:')
@@ -209,21 +273,46 @@ class Professor(User):
 			print('\t', end='')
 			print(each)
 		print('------')
+		# print base user actions
 		print('User Actions:')
-		super(Professor, self).show_info()
+		commands = self.get_cmds()
+		for each in self.get_base_cmds():
+			print(commands[each]['message'])
 		print()
+		# print professor-specific actions
 		print('Professor Actions')
-		print('set_college\tChange your college')
-		print('set_office\tChange your office number')
-		print('create_course\tCreate a new course')
-		print('show_rosters\tShow your rosters')
+		for each in self.get_professor_cmds():
+			print(commands[each]['message'])
 		print()
+
+	def get_professor_cmds(self):
+		# active professor commands
+		professor_cmds = [
+			'set_college',
+			'set_office',
+			'create_course',
+			'show_rosters',
+		]
+		return professor_cmds
 
 	def get_cmds(self):
 		commands = super(Professor, self).get_cmds()
-		commands['set_college'] = self.set_college
-		commands['set_office'] = self.set_office
-		commands['create_course'] = self.create_course
+		commands['set_college'] = {
+			'command': self.set_college,
+			'message': 'set_college\tChange your college',
+			}
+		commands['set_office'] = {
+			'command': self.set_office,
+			'message': 'set_office\tChange your office number',
+			}
+		commands['create_course'] = {
+			'command': self.create_course,
+			'message': 'create_course\tCreate a new course',
+			}
+		commands['show_rosters'] = {
+			'command': self.get_rosters,
+			'message': 'show_rosters\tShow your rosters',
+		}
 		return commands
 
 
@@ -232,11 +321,53 @@ class RegistrationManager(User):
 	def __init__(self, *args, **kwargs):
 		super(RegistrationManager, self).__init__(*args, **kwargs)
 
-	def enroll_student(self, Student, Course):
-		pass
+	def enroll_student(self):
+		print('Enroll student...')
 
-	def suspend_student(self, Student):
-		pass
+	def suspend_student(self):
+		print('Suspend student...')
 
 	def run_scheduler(self):
-		pass
+		print('Run scheduler...')
+
+	def show_info(self):
+		# print all base info
+		for each in self.get_base_info():
+			print(each)
+		print('------')
+		# print base user actions
+		print('User Actions:')
+		commands = self.get_cmds()
+		for each in self.get_base_cmds():
+			print(commands[each]['message'])
+		print()
+		# print professor-specific actions
+		print('Registration Manager Actions')
+		for each in self.get_regman_cmds():
+			print(commands[each]['message'])
+		print()
+
+	def get_regman_cmds(self):
+		# active professor commands
+		regman_cmds = [
+			'enroll_student',
+			'suspend_student',
+			'run_scheduler',
+		]
+		return regman_cmds
+
+	def get_cmds(self):
+		commands = super(RegistrationManager, self).get_cmds()
+		commands['enroll_student'] = {
+			'command': self.enroll_student,
+			'message': 'enroll_student\tEnroll a new student',
+			}
+		commands['suspend_student'] = {
+			'command': self.suspend_student,
+			'message': 'suspend_student\tSuspend a student from registration activities',
+			}
+		commands['run_scheduler'] = {
+			'command': self.run_scheduler,
+			'message': 'run_scheduler\tRun the automated scheduling tool',
+			}
+		return commands

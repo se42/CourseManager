@@ -86,15 +86,41 @@ class TestUserMethods(unittest.TestCase):
 		self.assertEqual(self.user.password, pw)
 
 	def test_login(self):
-		pass
+		self.assertFalse(self.user.is_logged_in(), msg='User was already logged in')
+		self.assertFalse(self.user.login('wrong_password'))
+		self.assertTrue(self.user.login('password'))
+		self.assertTrue(self.user.is_logged_in())
 
 	def test_logout(self):
-		pass
+		self.user.logged_in = True
+		self.assertTrue(self.user.is_logged_in())
+		self.assertEqual(self.user.logout(), 'Logout successful.')
+		self.assertFalse(self.user.is_logged_in())
 
 	def test_is_logged_in(self):
+		self.assertFalse(self.user.is_logged_in())
+		self.user.logged_in = True
+		self.assertTrue(self.user.is_logged_in())
+
+	def test_get_base_info(self):
+		self.assertEqual(type(self.user.get_base_info()), list)
+		self.assertEqual(self.user.get_base_info()[0], 'Logged in as: Foo Bar')
+		self.assertEqual(self.user.get_base_info()[1], 'Current email: mymail@me.com')
+
+	def test_get_base_cmds(self):
+		self.assertEqual(type(self.user.get_base_cmds()), list)
+		installed_cmds = self.user.get_cmds().keys()
+		for each in self.user.get_base_cmds():
+			self.assertTrue(each in installed_cmds, msg='{0} not in installed commands'.format(each))
+
+	def test_get_cmds(self):
 		pass
 
+	def test_show_info(self):
+		pass
 
+	def test_do(self):
+		pass
 
 
 if __name__ == '__main__':
